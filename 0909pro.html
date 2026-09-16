@@ -1,0 +1,2379 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Antigravity｜會員管理系統</title>
+
+    <style>
+        /* =========================================================
+       1. 基本設定
+    ========================================================= */
+
+        :root {
+            --bg: #020617;
+            --bg-secondary: #0f172a;
+
+            --neon-green: #39ffb6;
+            --neon-blue: #38bdf8;
+            --neon-purple: #a78bfa;
+            --neon-pink: #f472b6;
+
+            --text-main: #f8fafc;
+            --text-secondary: #94a3b8;
+
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.10);
+
+            --shadow-green:
+                0 0 10px rgba(57, 255, 182, 0.35),
+                0 0 30px rgba(57, 255, 182, 0.18);
+
+            --shadow-blue:
+                0 0 10px rgba(56, 189, 248, 0.35),
+                0 0 30px rgba(56, 189, 248, 0.18);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+
+            font-family:
+                "Microsoft JhengHei",
+                "Noto Sans TC",
+                Arial,
+                sans-serif;
+
+            color: var(--text-main);
+
+            background:
+                radial-gradient(ellipse at 12% 8%, rgba(14, 116, 144, 0.28), transparent 34%),
+                radial-gradient(ellipse at 88% 18%, rgba(91, 33, 182, 0.25), transparent 36%),
+                radial-gradient(ellipse at 48% 100%, rgba(5, 99, 96, 0.22), transparent 42%),
+                linear-gradient(145deg, #010617 0%, #06172e 48%, #08081d 100%);
+            background-size: 140% 140%;
+            animation: nightSkyDrift 28s linear infinite alternate;
+
+            overflow-x: hidden;
+        }
+
+
+        /* =========================================================
+       2. 星空背景
+    ========================================================= */
+
+        body::before {
+            content: "";
+
+            position: fixed;
+            inset: 0;
+
+            pointer-events: none;
+
+            background-image:
+                radial-gradient(circle,
+                    rgba(255, 255, 255, 0.7) 1px,
+                    transparent 1px);
+
+            background-size: 90px 90px;
+
+            opacity: 0.15;
+        }
+
+        .aurora {
+            position: fixed;
+
+            width: min(92vw, 980px);
+            height: min(62vw, 680px);
+
+            border-radius: 48% 52% 42% 58% / 58% 44% 56% 42%;
+
+            filter: blur(46px) saturate(145%);
+
+            opacity: 0.32;
+
+            pointer-events: none;
+
+            z-index: 0;
+            will-change: transform, border-radius;
+            animation: auroraMove 16s linear infinite alternate;
+        }
+
+        /* 讓極光內部的光帶持續掠過，不只是整塊背景位移 */
+        .aurora::after {
+            content: "";
+            position: absolute;
+            inset: -24%;
+            background: repeating-linear-gradient(104deg,
+                    transparent 0 13%,
+                    rgba(220, 255, 250, 0.2) 18%,
+                    transparent 25% 38%);
+            background-size: 190% 100%;
+            mix-blend-mode: screen;
+            /* 光帶跟著極光本體平移，避免背景循環重置造成跳格 */
+        }
+
+        .aurora-one {
+            background: linear-gradient(112deg,
+                    transparent 8%,
+                    rgba(45, 212, 191, 0.9) 32%,
+                    rgba(34, 211, 238, 0.72) 50%,
+                    transparent 74%);
+
+            top: -16vh;
+            left: -24vw;
+        }
+
+        .aurora-two {
+            background: linear-gradient(70deg,
+                    transparent 12%,
+                    rgba(125, 211, 252, 0.68) 34%,
+                    rgba(168, 85, 247, 0.78) 58%,
+                    transparent 82%);
+
+            right: -30vw;
+            top: 12%;
+            animation-delay: -7s;
+            animation-duration: 20s;
+        }
+
+        .aurora-three {
+            background: linear-gradient(100deg,
+                    transparent 6%,
+                    rgba(16, 185, 129, 0.65) 30%,
+                    rgba(45, 212, 191, 0.78) 54%,
+                    rgba(139, 92, 246, 0.58) 73%,
+                    transparent 94%);
+
+            bottom: -24vh;
+            left: 5%;
+            animation-delay: -12s;
+            animation-duration: 24s;
+        }
+
+
+
+        /* 全新升級：深邃極光微光按鈕 */
+        .btn-delete {
+            /* 使用極光經典的夜空藍到深邃紫漸層 */
+            background: linear-gradient(135deg, #1e1b4b, #311042);
+            color: #38bdf8;
+            /* 字體使用清透的天藍色 */
+
+            /* 霓虹青色的微光邊框，讓它在暗色背景中跳出來 */
+            border: 1px solid rgba(56, 189, 248, 0.4);
+
+            padding: 7px 16px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            cursor: pointer;
+
+            /* 青色（Cyan）的極光微光外陰影 */
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.15);
+
+            /* 平滑動態曲線 */
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 滑鼠懸停效果：極光能量釋放，按鈕亮起、邊框變明顯 */
+        .btn-delete:hover {
+            /* 漸層轉為青綠到迷幻紫，模擬極光流動 */
+            background: linear-gradient(135deg, #0f172a, #2e1065);
+            color: #22d3ee;
+            /* 字體變為更亮的亮青色 */
+            border-color: #22d3ee;
+            /* 邊框完全亮起 */
+
+            transform: translateY(-2px);
+            /* 向上微浮 */
+            box-shadow: 0 0 20px rgba(34, 211, 238, 0.4);
+            /* 增強霓虹發光感 */
+        }
+
+        /* 點擊瞬間效果：按鈕往下壓、微光內縮 */
+        .btn-delete:active {
+            transform: translateY(1px);
+            box-shadow: 0 0 8px rgba(34, 211, 238, 0.2);
+        }
+
+        /* 當按鈕被禁用時（正在處理刪除中）的磨砂灰色 */
+        .btn-delete:disabled {
+            background: rgba(255, 255, 255, 0.05) !important;
+            color: #64748b;
+            border-color: rgba(255, 255, 255, 0.1) !important;
+            box-shadow: none !important;
+            transform: none !important;
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+
+        /* 彈出視窗滿版遮罩背景 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.6);
+            /* 暗色夜空半透明背景 */
+            backdrop-filter: blur(8px);
+            /* 讓背景網頁模糊，強調中間彈窗 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        /* 啟動時顯示遮罩 */
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* 彈出視窗主體：極光磨砂玻璃 */
+        .modal-box {
+            background: rgba(30, 27, 75, 0.45);
+            /* 深藍夜空半透明 */
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(56, 189, 248, 0.25);
+            /* 霓虹青色淡邊框 */
+            padding: 30px;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), 0 0 30px rgba(56, 189, 248, 0.1);
+            transform: scale(0.85);
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        /* 視窗開啟時的放大回彈動畫 */
+        .modal-overlay.active .modal-box {
+            transform: scale(1);
+        }
+
+        /* 提示圖示 */
+        .modal-icon {
+            font-size: 36px;
+            margin-bottom: 12px;
+            filter: drop-shadow(0 0 10px rgba(234, 179, 8, 0.5));
+        }
+
+        /* 標題與文字 */
+        .modal-title {
+            margin: 0 0 10px 0;
+            color: #38bdf8;
+            /* 天藍高亮 */
+            font-size: 18px;
+            letter-spacing: 1px;
+        }
+
+        .modal-text {
+            margin: 0 0 24px 0;
+            color: #cbd5e1;
+            font-size: 14px;
+            line-height: 1.5;
+            word-break: break-all;
+        }
+
+        /* 按鈕群組 */
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        /* 通用按鈕基礎設定 */
+        .modal-btn {
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            letter-spacing: 0.5px;
+        }
+
+        /* 取消按鈕：低調融入背景 */
+        .btn-cancel {
+            background: rgba(255, 255, 255, 0.05);
+            color: #94a3b8;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-cancel:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: #f8fafc;
+        }
+
+        /* 確定刪除按鈕：極光青色霓虹閃爍（非紅色） */
+        .btn-confirm {
+            background: linear-gradient(135deg, #0284c7, #2e1065);
+            color: #22d3ee;
+            border: 1px solid rgba(34, 211, 238, 0.5);
+            box-shadow: 0 0 12px rgba(34, 211, 238, 0.2);
+        }
+
+        .btn-confirm:hover {
+            filter: brightness(1.2);
+            box-shadow: 0 0 20px rgba(34, 211, 238, 0.5);
+            transform: translateY(-1px);
+        }
+
+
+        @keyframes auroraMove {
+            0% {
+                transform: translate3d(0, 0, 0) rotate(-8deg) scale(1);
+                border-radius: 48% 52% 42% 58% / 58% 44% 56% 42%;
+            }
+
+            50% {
+                transform: translate3d(18vw, 11vh, 0) rotate(7deg) scale(1.18);
+                border-radius: 62% 38% 57% 43% / 45% 62% 38% 55%;
+            }
+
+            100% {
+                transform: translate3d(-12vw, 18vh, 0) rotate(-3deg) scale(1.08);
+                border-radius: 42% 58% 48% 52% / 62% 40% 60% 38%;
+            }
+        }
+
+        @keyframes nightSkyDrift {
+            from {
+                background-position: 0% 0%;
+            }
+
+            to {
+                background-position: 140% 140%;
+            }
+        }
+
+
+
+        /* =========================================================
+       3. Antigravity Floating 動畫
+    ========================================================= */
+
+        @keyframes float {
+            0% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-8px);
+            }
+
+            100% {
+                transform: translateY(0px);
+            }
+        }
+
+        @keyframes floatSlow {
+            0% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-12px);
+            }
+
+            100% {
+                transform: translateY(0px);
+            }
+        }
+
+
+        /* =========================================================
+       4. 主容器
+    ========================================================= */
+
+        .container {
+            position: relative;
+
+            width: min(1400px, 92%);
+
+            margin: 0 auto;
+
+            padding: 70px 0;
+        }
+
+
+        /* =========================================================
+       5. Header
+    ========================================================= */
+
+        .header {
+            text-align: center;
+
+            margin-bottom: 55px;
+
+            animation: floatSlow 6s ease-in-out infinite;
+        }
+
+        .header-label {
+            display: inline-block;
+
+            margin-bottom: 16px;
+
+            padding: 7px 16px;
+
+            border: 1px solid rgba(57, 255, 182, 0.25);
+
+            border-radius: 999px;
+
+            color: var(--neon-green);
+
+            background: rgba(57, 255, 182, 0.06);
+
+            font-size: 13px;
+
+            letter-spacing: 3px;
+
+            box-shadow:
+                0 0 15px rgba(57, 255, 182, 0.12);
+        }
+
+        .header h1 {
+            font-size: clamp(36px, 6vw, 68px);
+
+            font-weight: 800;
+
+            letter-spacing: 5px;
+
+            background:
+                linear-gradient(90deg,
+                    #ffffff,
+                    #38bdf8,
+                    #39ffb6,
+                    #a78bfa,
+                    #ffffff);
+
+            background-size: 300% auto;
+
+            color: transparent;
+
+            -webkit-background-clip: text;
+            background-clip: text;
+
+            animation: gradientMove 7s linear infinite;
+        }
+
+        .header p {
+            margin-top: 15px;
+
+            color: var(--text-secondary);
+
+            font-size: 16px;
+
+            letter-spacing: 1px;
+        }
+
+        @keyframes gradientMove {
+            0% {
+                background-position: 0% center;
+            }
+
+            100% {
+                background-position: 300% center;
+            }
+        }
+
+
+        /* =========================================================
+       6. Glass Card
+    ========================================================= */
+
+        .glass-card {
+            position: relative;
+
+            background: var(--glass);
+
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+
+            border: 1px solid var(--glass-border);
+
+            border-radius: 24px;
+
+            box-shadow:
+                0 20px 60px rgba(0, 0, 0, 0.25),
+                inset 0 1px 0 rgba(255, 255, 255, 0.04);
+
+            transition:
+                transform 0.35s ease,
+                box-shadow 0.35s ease,
+                border-color 0.35s ease;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-6px);
+
+            border-color: rgba(57, 255, 182, 0.25);
+
+            box-shadow:
+                0 20px 70px rgba(0, 0, 0, 0.35),
+                0 0 30px rgba(57, 255, 182, 0.07);
+        }
+
+
+        /* =========================================================
+       7. Layout
+    ========================================================= */
+
+        .dashboard {
+            display: grid;
+
+            grid-template-columns: 380px 1fr;
+
+            gap: 28px;
+
+            align-items: start;
+        }
+
+        .form-card {
+            padding: 30px;
+
+            animation:
+                float 6s ease-in-out infinite;
+        }
+
+        .table-card {
+            padding: 30px;
+
+            animation:
+                float 7s ease-in-out infinite;
+        }
+
+
+        /* =========================================================
+       8. 卡片標題
+    ========================================================= */
+
+        .card-title {
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+
+            margin-bottom: 25px;
+        }
+
+        .card-icon {
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            width: 42px;
+            height: 42px;
+
+            border-radius: 12px;
+
+            color: var(--neon-green);
+
+            background: rgba(57, 255, 182, 0.08);
+
+            border: 1px solid rgba(57, 255, 182, 0.15);
+
+            box-shadow:
+                0 0 20px rgba(57, 255, 182, 0.12);
+        }
+
+        .card-title h2 {
+            font-size: 21px;
+        }
+
+        .card-title span {
+            display: block;
+
+            margin-top: 4px;
+
+            color: var(--text-secondary);
+
+            font-size: 12px;
+        }
+
+
+        /* =========================================================
+       9. Form
+    ========================================================= */
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+
+            margin-bottom: 8px;
+
+            color: #cbd5e1;
+
+            font-size: 14px;
+        }
+
+        .input,
+        .select {
+            width: 100%;
+
+            padding: 14px 15px;
+
+            border: 1px solid rgba(255, 255, 255, 0.10);
+
+            border-radius: 12px;
+
+            outline: none;
+
+            color: white;
+
+            background: rgba(15, 23, 42, 0.65);
+
+            transition:
+                border-color 0.3s ease,
+                box-shadow 0.3s ease,
+                transform 0.3s ease;
+        }
+
+        .input::placeholder {
+            color: #64748b;
+        }
+
+        .input:focus,
+        .select:focus {
+            border-color: var(--neon-green);
+
+            box-shadow:
+                0 0 0 3px rgba(57, 255, 182, 0.08),
+                0 0 20px rgba(57, 255, 182, 0.25);
+
+            transform: translateY(-2px);
+        }
+
+        .select option {
+            color: white;
+
+            background: #0f172a;
+        }
+
+
+        /* =========================================================
+       10. Submit Button
+    ========================================================= */
+
+        .submit-btn {
+            position: relative;
+
+            width: 100%;
+
+            padding: 15px;
+
+            margin-top: 8px;
+
+            border: 1px solid rgba(57, 255, 182, 0.35);
+
+            border-radius: 13px;
+
+            color: #02130c;
+
+            background:
+                linear-gradient(135deg,
+                    #39ffb6,
+                    #38bdf8);
+
+            font-size: 15px;
+
+            font-weight: 800;
+
+            cursor: pointer;
+
+            overflow: hidden;
+
+            transition:
+                transform 0.3s ease,
+                box-shadow 0.3s ease,
+                opacity 0.3s ease;
+        }
+
+        .submit-btn::before {
+            content: "";
+
+            position: absolute;
+
+            top: 0;
+            left: -100%;
+
+            width: 100%;
+            height: 100%;
+
+            background:
+                linear-gradient(90deg,
+                    transparent,
+                    rgba(255, 255, 255, 0.5),
+                    transparent);
+
+            transition: left 0.6s ease;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+
+            box-shadow:
+                0 0 15px rgba(57, 255, 182, 0.5),
+                0 0 40px rgba(56, 189, 248, 0.25);
+        }
+
+        .submit-btn:hover::before {
+            left: 100%;
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .submit-btn:disabled {
+            cursor: not-allowed;
+
+            opacity: 0.55;
+
+            transform: none;
+
+            box-shadow: none;
+        }
+
+
+        /* =========================================================
+       11. Table Header
+    ========================================================= */
+
+        .table-header {
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            margin-bottom: 25px;
+        }
+
+        .member-count {
+            padding: 7px 13px;
+
+            border-radius: 999px;
+
+            color: var(--neon-blue);
+
+            background: rgba(56, 189, 248, 0.07);
+
+            border: 1px solid rgba(56, 189, 248, 0.15);
+
+            font-size: 12px;
+        }
+
+
+        /* =========================================================
+       12. Table
+    ========================================================= */
+
+        .table-wrapper {
+            width: 100%;
+
+            /* 會員資料框不顯示底部水平捲軸 */
+            overflow: hidden;
+
+            border-radius: 16px;
+
+            border: 1px solid rgba(255, 255, 255, 0.07);
+        }
+
+        table {
+            width: 100%;
+
+            min-width: 0;
+
+            table-layout: fixed;
+
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        th {
+            padding: 16px;
+
+            color: #94a3b8;
+
+            font-size: 13px;
+
+            font-weight: 600;
+
+            text-align: left;
+
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 16px;
+
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+
+            color: #e2e8f0;
+
+            font-size: 14px;
+
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
+
+        th:nth-child(1),
+        td:nth-child(1) {
+            width: 48px;
+        }
+
+        th:nth-child(5),
+        td:nth-child(5) {
+            width: 122px;
+            white-space: nowrap;
+        }
+
+        th:nth-child(6),
+        td:nth-child(6) {
+            width: 112px;
+            white-space: nowrap;
+        }
+
+        .role-badge,
+        .btn-delete {
+            white-space: nowrap;
+        }
+
+        tbody tr {
+            transition:
+                background 0.3s ease,
+                transform 0.3s ease;
+        }
+
+        tbody tr:hover {
+            background: rgba(57, 255, 182, 0.035);
+
+            transform: translateX(3px);
+        }
+
+
+        /* =========================================================
+       13. Role Badge
+    ========================================================= */
+
+        .role-badge {
+            display: inline-flex;
+
+            align-items: center;
+
+            padding: 6px 12px;
+
+            border-radius: 999px;
+
+            font-size: 12px;
+
+            font-weight: 700;
+
+            border: 1px solid;
+
+            box-shadow:
+                inset 0 0 10px rgba(255, 255, 255, 0.04);
+        }
+
+        /* 老大 */
+        .role-boss {
+            color: #facc15;
+
+            background: rgba(250, 204, 21, 0.08);
+
+            border-color: rgba(250, 204, 21, 0.3);
+
+            box-shadow:
+                0 0 12px rgba(250, 204, 21, 0.2);
+        }
+
+        /* 寵物 */
+        .role-pet {
+            color: #f472b6;
+
+            background: rgba(244, 114, 182, 0.08);
+
+            border-color: rgba(244, 114, 182, 0.3);
+
+            box-shadow:
+                0 0 12px rgba(244, 114, 182, 0.2);
+        }
+
+        /* 訪客 */
+        .role-guest {
+            color: #38bdf8;
+
+            background: rgba(56, 189, 248, 0.08);
+
+            border-color: rgba(56, 189, 248, 0.3);
+
+            box-shadow:
+                0 0 12px rgba(56, 189, 248, 0.2);
+        }
+
+        /* 其他 */
+        .role-default {
+            color: #a78bfa;
+
+            background: rgba(167, 139, 250, 0.08);
+
+            border-color: rgba(167, 139, 250, 0.3);
+
+            box-shadow:
+                0 0 12px rgba(167, 139, 250, 0.2);
+        }
+
+
+        /* =========================================================
+       14. Loading
+    ========================================================= */
+
+        .loading {
+            min-height: 250px;
+
+            display: flex;
+
+            flex-direction: column;
+
+            align-items: center;
+            justify-content: center;
+
+            gap: 18px;
+        }
+
+        .loader {
+            position: relative;
+
+            width: 52px;
+            height: 52px;
+
+            border-radius: 50%;
+
+            border: 3px solid rgba(255, 255, 255, 0.08);
+
+            border-top-color: var(--neon-green);
+
+            border-right-color: var(--neon-blue);
+
+            animation: spin 0.9s linear infinite;
+
+            box-shadow:
+                0 0 15px rgba(57, 255, 182, 0.25);
+        }
+
+        .loader::after {
+            content: "";
+
+            position: absolute;
+
+            inset: 7px;
+
+            border-radius: 50%;
+
+            border: 2px solid transparent;
+
+            border-bottom-color: var(--neon-purple);
+
+            animation: spinReverse 1.3s linear infinite;
+        }
+
+        .loading-text {
+            color: var(--text-secondary);
+
+            font-size: 13px;
+
+            letter-spacing: 2px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes spinReverse {
+            to {
+                transform: rotate(-360deg);
+            }
+        }
+
+
+        /* =========================================================
+       15. Empty State
+    ========================================================= */
+
+        .empty-state {
+            min-height: 250px;
+
+            display: flex;
+
+            flex-direction: column;
+
+            justify-content: center;
+            align-items: center;
+
+            gap: 10px;
+
+            color: #64748b;
+        }
+
+        .empty-icon {
+            font-size: 38px;
+
+            opacity: 0.5;
+        }
+
+
+        /* =========================================================
+       16. Toast 提示框
+    ========================================================= */
+
+        /* 通知容器：強制鎖定在網頁正中央 */
+        .toast-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            z-index: 10005;
+            /* 層級開到最高，確保壓在所有元素上面 */
+            pointer-events: none;
+            /* 防止擋到滑鼠點擊 */
+        }
+
+        /* 鑽石發光通知主體 */
+        .toast {
+            min-width: 320px;
+            padding: 20px 30px;
+            border-radius: 16px;
+            text-align: center;
+
+            /* 深邃夜空半透明玻璃底層 */
+            background: rgba(10, 15, 30, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+
+            /* 鑽石霓虹高質感邊框 */
+            border: 2px solid rgba(165, 243, 252, 0.8);
+
+            /* 鑽石璀璨多層次耀眼光芒 (雙重陰影疊加) */
+            box-shadow:
+                0 0 25px rgba(34, 211, 238, 0.6),
+                0 0 50px rgba(165, 243, 252, 0.3),
+                inset 0 0 15px rgba(255, 255, 255, 0.2);
+
+            /* 引入流暢的縮放與淡入動畫 */
+            animation: diamondPopIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 鑽石成功的專屬色調（清透剔透的鑽石青藍色） */
+        .toast.success {
+            border-color: #22d3ee;
+            box-shadow:
+                0 0 30px rgba(34, 211, 238, 0.7),
+                0 0 60px rgba(6, 182, 212, 0.4),
+                inset 0 0 20px rgba(255, 255, 255, 0.3);
+        }
+
+        /* 一秒後以淡出動畫離場 */
+        .toast.is-leaving {
+            animation: toastFadeOut 0.2s ease-in forwards;
+        }
+
+        /* 鑽石璀璨的流光特效 (流星掃過效果) */
+        .toast::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -60%;
+            width: 30%;
+            height: 200%;
+            background: linear-gradient(90deg,
+                    rgba(255, 255, 255, 0) 0%,
+                    rgba(255, 255, 255, 0.6) 50%,
+                    rgba(255, 255, 255, 0) 100%);
+            transform: rotate(30deg);
+            animation: diamondShimmer 1.5s infinite linear;
+        }
+
+        /* 標題與文字結構設定 */
+        .toast-title {
+            font-size: 20px;
+            font-weight: 900;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+            color: #e2f8ff;
+            /* 讓文字自帶鑽石發光感 */
+            text-shadow: 0 0 10px rgba(34, 211, 238, 0.8);
+        }
+
+        .toast-message {
+            color: #cbd5e1;
+            font-size: 14px;
+            letter-spacing: 0.5px;
+        }
+
+        /* 🎬 動畫 1：中心放大回彈進場 */
+        @keyframes diamondPopIn {
+            0% {
+                transform: scale(0.6);
+                opacity: 0;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* 🎬 動畫 2：鑽石表面閃閃發光的流光效果 */
+        @keyframes diamondShimmer {
+            0% {
+                left: -60%;
+            }
+
+            100% {
+                left: 160%;
+            }
+        }
+
+        @keyframes toastFadeOut {
+            to {
+                opacity: 0;
+                transform: scale(0.94);
+            }
+        }
+
+        /* 全新置中鑽石通知容器 */
+        .diamond-container {
+            position: fixed !important;
+            top: 50% !important;
+            left: 50% !important;
+            transform: translate(-50%, -50%) !important;
+            display: flex !important;
+            flex-direction: column !important;
+            z-index: 99999 !important;
+            /* 確保在最上層 */
+            pointer-events: none !important;
+        }
+
+        /* 鑽石閃爍框主體 */
+        .diamond-alert {
+            min-width: 320px !important;
+            padding: 24px 35px !important;
+            border-radius: 16px !important;
+            text-align: center !important;
+
+            /* 頂級磨砂玻璃底色 */
+            background: rgba(10, 15, 30, 0.85) !important;
+            backdrop-filter: blur(20px) !important;
+            -webkit-backdrop-filter: blur(20px) !important;
+
+            /* 璀璨鑽石青藍色發光粗邊框 */
+            border: 2px solid #22d3ee !important;
+
+            /* 超亮鑽石霓虹雙層發光陰影 */
+            box-shadow:
+                0 0 30px rgba(34, 211, 238, 0.8),
+                0 0 60px rgba(6, 182, 212, 0.4),
+                inset 0 0 20px rgba(255, 255, 255, 0.3) !important;
+
+            /* 縮放進場動畫 */
+            animation: diamondPopIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards !important;
+            position: relative !important;
+            overflow: hidden !important;
+        }
+
+        /* 鑽石流光劃過特效 */
+        .diamond-alert::after {
+            content: '' !important;
+            position: absolute !important;
+            top: -50% !important;
+            left: -60% !important;
+            width: 30% !important;
+            height: 200% !important;
+            background: linear-gradient(90deg,
+                    rgba(255, 255, 255, 0) 0%,
+                    rgba(255, 255, 255, 0.7) 50%,
+                    rgba(255, 255, 255, 0) 100%) !important;
+            transform: rotate(30deg) !important;
+            animation: diamondShimmer 1.5s infinite linear !important;
+        }
+
+        /* 鑽石發光標題 */
+        .diamond-title {
+            font-size: 22px !important;
+            font-weight: 900 !important;
+            letter-spacing: 2px !important;
+            margin-bottom: 8px !important;
+            color: #ffffff !important;
+            text-shadow: 0 0 12px rgba(34, 211, 238, 0.9) !important;
+        }
+
+        /* 內文 */
+        .diamond-message {
+            color: #cbd5e1 !important;
+            font-size: 14px !important;
+            letter-spacing: 0.5px !important;
+        }
+
+        /* 動態效果 */
+        @keyframes diamondPopIn {
+            0% {
+                transform: scale(0.5);
+                opacity: 0;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes diamondShimmer {
+            0% {
+                left: -60%;
+            }
+
+            100% {
+                left: 160%;
+            }
+        }
+
+
+        /* =========================================================
+       17. Footer
+    ========================================================= */
+
+        footer {
+            margin-top: 50px;
+
+            text-align: center;
+
+            color: #475569;
+
+            font-size: 12px;
+
+            letter-spacing: 1px;
+        }
+
+
+        /* =========================================================
+       18. RWD
+    ========================================================= */
+
+        @media (max-width: 1000px) {
+
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+
+            .form-card {
+                animation: float 7s ease-in-out infinite;
+            }
+
+            .table-card {
+                animation: float 8s ease-in-out infinite;
+            }
+        }
+
+
+        @media (max-width: 600px) {
+
+            .container {
+                width: 94%;
+
+                padding: 40px 0;
+            }
+
+            .header {
+                margin-bottom: 35px;
+            }
+
+            .header h1 {
+                letter-spacing: 2px;
+            }
+
+            .form-card,
+            .table-card {
+                padding: 20px;
+
+                border-radius: 18px;
+            }
+
+            .table-header {
+                align-items: flex-start;
+
+                gap: 10px;
+
+                flex-direction: column;
+            }
+
+            .toast-container {
+                right: 15px;
+                left: 15px;
+                bottom: 15px;
+            }
+
+            .toast {
+                min-width: auto;
+            }
+        }
+
+
+        /* =========================================================
+       19. Reduced Motion
+    ========================================================= */
+
+        @media (prefers-reduced-motion: reduce) {
+
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+
+                animation-iteration-count: 1 !important;
+
+                transition-duration: 0.01ms !important;
+            }
+
+            /* 此頁背景依需求保留極光流動效果 */
+            body,
+            .aurora,
+            .aurora::after {
+                animation-iteration-count: infinite !important;
+            }
+
+            body {
+                animation-duration: 28s !important;
+            }
+
+            .aurora {
+                animation-duration: 16s !important;
+            }
+
+            .aurora-two {
+                animation-duration: 20s !important;
+            }
+
+            .aurora-three {
+                animation-duration: 24s !important;
+            }
+        }
+    </style>
+</head>
+
+
+<body>
+
+    <!-- 星空極光背景 -->
+    <div class="aurora aurora-one"></div>
+    <div class="aurora aurora-two"></div>
+    <div class="aurora aurora-three"></div>
+
+
+    <main class="container">
+
+        <!-- =====================================================
+         Header
+    ====================================================== -->
+
+        <header class="header">
+
+            <div class="header-label">
+                ANTIGRAVITY SYSTEM
+            </div>
+
+            <h1>會員管理中心</h1>
+
+            <p>
+                Floating Data · Aurora Interface · Glassmorphism
+            </p>
+
+        </header>
+
+
+        <!-- =====================================================
+         Dashboard
+    ====================================================== -->
+
+        <section class="dashboard">
+
+
+            <!-- ===================================================
+           左側：新增會員
+      ==================================================== -->
+
+            <div class="glass-card form-card">
+
+                <div class="card-title">
+
+                    <div class="card-icon">
+                        ✦
+                    </div>
+
+                    <div>
+                        <h2>新增會員</h2>
+
+                        <span>
+                            Create New Member
+                        </span>
+                    </div>
+
+                </div>
+
+
+                <form id="memberForm">
+
+                    <!-- 姓名 -->
+
+                    <div class="form-group">
+
+                        <label for="name">
+                            暱稱
+                        </label>
+
+                        <input class="input" type="text" id="暱稱" name="暱稱" placeholder="請輸入暱稱" required>
+
+                    </div>
+
+
+                    <!-- gmail -->
+
+                    <div class="form-group">
+
+                        <label for="gmail">
+                            gmail
+                        </label>
+
+                        <input class="input" type="email" id="gmail" name="gmail" placeholder="example@gmail.com"
+                            required>
+
+                    </div>
+
+
+                    <!-- 電話 -->
+
+                    <div class="form-group">
+
+                        <label for="phone">
+                            電話
+                        </label>
+
+                        <input class="input" type="tel" id="phone" name="電話" placeholder="請輸入電話">
+
+                    </div>
+
+
+                    <!-- 角色 -->
+
+                    <div class="form-group">
+
+                        <label for="role">
+                            角色等級
+                        </label>
+
+                        <select class="select" id="role" name="角色等級" required>
+
+                            <option value="">
+                                請選擇角色
+                            </option>
+
+                            <option value="老大">
+                                👑 老大
+                            </option>
+
+                            <option value="寵物">
+                                💗 寵物
+                            </option>
+
+                            <option value="訪客">
+                                ✦ 訪客
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- 提交 -->
+
+                    <button type="submit" class="submit-btn" id="submitBtn">
+                        <span id="submitText">
+                            ✦ 建立會員
+                        </span>
+                    </button>
+
+                </form>
+
+            </div>
+
+
+
+            <!-- ===================================================
+           右側：會員資料
+      ==================================================== -->
+
+            <div class="glass-card table-card">
+
+                <div class="table-header">
+
+                    <div class="card-title" style="margin-bottom: 0;">
+
+                        <div class="card-icon">
+                            ◈
+                        </div>
+
+                        <div>
+                            <h2>會員資料</h2>
+
+                            <span>
+                                Member Database
+                            </span>
+                        </div>
+
+                    </div>
+
+
+                    <div class="member-count" id="memberCount">
+                        0 位會員
+                    </div>
+
+                </div>
+
+
+                <!-- 表格內容 -->
+
+                <div id="tableArea">
+
+                    <!-- Loading / Table / Empty 都會放這裡 -->
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <footer>
+            ANTIGRAVITY MEMBER SYSTEM · AURORA DATABASE
+        </footer>
+
+    </main>
+
+
+    <!-- Toast -->
+    <div class="toast-container" id="toastContainer"></div>
+
+
+
+    <script>
+
+        /* =========================================================
+           1. Google Apps Script API
+           
+           ★★★ 請把下面的網址換成你的 Apps Script Web App URL ★★★
+           
+           例如：
+           const API_URL =
+           "https://script.google.com/macros/s/XXXXXXXX/exec";
+        ========================================================= */
+
+        const API_URL = "https://script.google.com/macros/s/AKfycbzAmXPBLIxp-fXF4_jPdfu6kBZoDo56IFxlJSYqZju6fqe77VK-0UQ5UqM1Cb-uGLiy/exec";
+
+
+        /* =========================================================
+           2. DOM
+        ========================================================= */
+
+        const memberForm =
+            document.getElementById("memberForm");
+
+        const submitBtn =
+            document.getElementById("submitBtn");
+
+        const submitText =
+            document.getElementById("submitText");
+
+        const tableArea =
+            document.getElementById("tableArea");
+
+        const memberCount =
+            document.getElementById("memberCount");
+
+        const toastContainer =
+            document.getElementById("toastContainer");
+
+
+        /* =========================================================
+           3. 初始化
+        ========================================================= */
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            () => {
+
+                fetchMembers();
+
+            }
+        );
+
+
+        /* =========================================================
+           4. Loading HTML
+        ========================================================= */
+
+        function showLoading() {
+
+            tableArea.innerHTML = `
+
+        <div class="loading">
+
+          <div class="loader"></div>
+
+          <div class="loading-text">
+            LOADING MEMBERS...
+          </div>
+
+        </div>
+
+      `;
+
+        }
+
+
+        /* =========================================================
+           5. 讀取會員資料 GET
+        ========================================================= */
+
+        async function fetchMembers() {
+
+            showLoading();
+
+
+            try {
+
+                /*
+                  GET：
+        
+                  API_URL?action=read
+                */
+
+                const response = await fetch(
+                    `${API_URL}?action=read`
+                );
+
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        `HTTP ${response.status}`
+                    );
+
+                }
+
+
+                const result =
+                    await response.json();
+
+
+                /*
+                  預期格式：
+        
+                  {
+                    status: "success",
+                    data: [...]
+                  }
+                */
+
+                if (
+                    result.status !== "success"
+                ) {
+
+                    throw new Error(
+                        result.message ||
+                        "讀取會員資料失敗"
+                    );
+
+                }
+
+
+                const members =
+                    Array.isArray(result.data)
+                        ? result.data
+                        : [];
+
+
+                renderMembers(members);
+
+            }
+            catch (error) {
+
+                console.error(
+                    "fetchMembers Error:",
+                    error
+                );
+
+
+                tableArea.innerHTML = `
+
+          <div class="empty-state">
+
+            <div class="empty-icon">
+              ⚠
+            </div>
+
+            <div>
+              無法讀取會員資料
+            </div>
+
+            <small>
+              ${escapeHTML(error.message)}
+            </small>
+
+          </div>
+
+        `;
+
+
+                memberCount.textContent =
+                    "讀取失敗";
+
+
+                showToast(
+                    "讀取失敗",
+                    error.message,
+                    "error"
+                );
+
+            }
+
+        }
+
+
+        /* =========================================================
+           6. 渲染會員資料
+        ========================================================= */
+
+        function renderMembers(members) {
+
+            memberCount.textContent =
+                `${members.length} 位會員`;
+
+
+            if (members.length === 0) {
+
+                tableArea.innerHTML = `
+
+          <div class="empty-state">
+
+            <div class="empty-icon">
+              ◌
+            </div>
+
+            <div>
+              目前還沒有會員資料
+            </div>
+
+            <small>
+              可以從左側新增第一位會員
+            </small>
+
+          </div>
+
+        `;
+
+                return;
+
+            }
+
+
+            /*
+              這裡假設 Apps Script 回傳的資料格式是：
+      
+              [
+                {
+                  name: "小明",
+                  gmail: "test@gmail.com",
+                  phone: "0912345678",
+                  role: "老大"
+                }
+              ]
+      
+              如果你的 Google Sheet 欄位名稱不同，
+              只需要修改這裡即可。
+            */
+
+
+            let rows = "";
+
+            members.forEach((member, index) => {
+
+
+                const name = member["暱稱"] ?? "";
+                const gmail = member["gmail"] ?? "";
+                const phone = member["電話"] ?? "";
+                const role = member["角色等級"] ?? "";
+
+                rows += `
+
+            <tr id="row-${index}"> 
+
+              <td>
+                ${index + 1}
+              </td>
+
+              <td>
+                ${escapeHTML(name)}
+              </td>
+
+              <td>
+                ${escapeHTML(gmail)}
+              </td>
+
+              <td>
+                ${escapeHTML(phone)}
+              </td>
+
+              <td>
+                ${getRoleBadge(role)}
+              </td>
+
+              <td>
+                <button class="btn-delete" onclick="deleteMember('${escapeHTML(gmail)}', 'row-${index}')">刪除</button>
+            </td>
+
+</tr>
+
+
+          `;
+
+            }
+            );
+
+
+            tableArea.innerHTML = `
+
+        <div class="table-wrapper">
+
+          <table>
+
+            <thead>
+
+              <tr>
+
+                <th>
+                  #
+                </th>
+
+                <th>
+                  暱稱
+                </th>
+
+                <th>
+                  gmail
+                </th>
+
+                <th>
+                  電話
+                </th>
+
+                <th>
+                  角色等級
+                </th>
+
+                <th>
+                  操作
+                </th>
+
+
+              </tr>
+
+            </thead>
+
+
+            <tbody>
+
+              ${rows}
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      `;
+
+        }
+
+
+        /* =========================================================
+           7. 角色 Badge
+        ========================================================= */
+
+        function getRoleBadge(role) {
+
+            const roleText =
+                String(role || "未知");
+
+
+            let className =
+                "role-default";
+
+            let icon =
+                "✦";
+
+
+            if (roleText === "老大") {
+
+                className =
+                    "role-boss";
+
+                icon =
+                    "👑";
+
+            }
+            else if (roleText === "寵物") {
+
+                className =
+                    "role-pet";
+
+                icon =
+                    "💗";
+
+            }
+            else if (roleText === "訪客") {
+
+                className =
+                    "role-guest";
+
+                icon =
+                    "✦";
+
+            }
+
+
+            return `
+
+        <span
+          class="role-badge ${className}"
+        >
+          ${icon}
+          &nbsp;
+          ${escapeHTML(roleText)}
+        </span>
+
+      `;
+
+        }
+
+
+        /* =========================================================
+           8. 表單 Submit
+        ========================================================= */
+
+        memberForm.addEventListener(
+            "submit",
+            async (event) => {
+
+                /*
+                  阻止表單預設重新整理
+                */
+
+                event.preventDefault();
+
+
+                /*
+                  防止重複提交
+                */
+
+                if (
+                    submitBtn.disabled
+                ) {
+
+                    return;
+
+                }
+
+
+                /*
+                  取得表單資料
+                */
+
+                const formData =
+                    new FormData(memberForm);
+
+
+                const payload = {
+
+                    暱稱:
+                        formData.get("暱稱"),
+
+                    gmail:
+                        formData.get("gmail"),
+
+                    電話:
+                        formData.get("電話"),
+
+                    角色等級:
+                        formData.get("角色等級")
+
+                };
+
+
+                /*
+                  按鈕進入 Loading
+                */
+
+                setSubmitLoading(true);
+
+
+                try {
+
+                    /*
+                      POST 到 Google Apps Script
+          
+                      特別注意：
+          
+                      Content-Type 必須使用：
+          
+                      text/plain
+          
+                      避免 GAS CORS 問題。
+                    */
+
+                    const response =
+                        await fetch(
+                            API_URL,
+                            {
+                                method: "POST",
+
+                                headers: {
+                                    "Content-Type":
+                                        "text/plain"
+                                },
+
+                                body:
+                                    JSON.stringify(payload)
+                            }
+                        );
+
+
+                    if (!response.ok) {
+
+                        throw new Error(
+                            `HTTP ${response.status}`
+                        );
+
+                    }
+
+
+                    /*
+                      嘗試解析 JSON
+                    */
+
+                    const result =
+                        await response.json();
+
+
+                    if (
+                        result.status !== "success"
+                    ) {
+
+                        throw new Error(
+                            result.message ||
+                            "新增會員失敗"
+                        );
+
+                    }
+
+
+                    /*
+                      成功
+                    */
+
+                    showToast(
+                        "新增成功 ✦",
+                        "會員資料已成功加入資料庫！",
+                        "success"
+                    );
+
+
+                    /*
+                      清空表單
+                    */
+
+                    memberForm.reset();
+
+
+                    /*
+                      重新讀取會員
+                    */
+
+                    await fetchMembers();
+
+                }
+                catch (error) {
+
+                    console.error(
+                        "POST Error:",
+                        error
+                    );
+
+
+                    showToast(
+                        "建立失敗",
+                        error.message ||
+                        "無法新增會員",
+                        "error"
+                    );
+
+                }
+                finally {
+
+                    /*
+                      不論成功或失敗，
+                      最後都恢復按鈕。
+                    */
+
+                    setSubmitLoading(false);
+
+                }
+
+            }
+        );
+
+
+        /* =========================================================
+           9. Submit Button Loading
+        ========================================================= */
+
+        function setSubmitLoading(
+            loading
+        ) {
+
+            submitBtn.disabled =
+                loading;
+
+
+            if (loading) {
+
+                submitText.innerHTML = `
+
+          <span>
+            ◌ 正在建立會員...
+          </span>
+
+        `;
+
+            }
+            else {
+
+                submitText.innerHTML = `
+
+          ✦ 建立會員
+
+        `;
+
+            }
+
+        }
+
+
+        /* =========================================================
+           10. Toast 提示框
+        ========================================================= */
+
+        /**
+ * 彈出鑽石光芒置中通知（顯示完自動完全消失）
+ */
+
+
+        function showToast(title, message, type = "success") {
+            // 建立一個您原本設計的 div 元素
+            const toast = document.createElement("div");
+
+            // 完美套用您網頁原本就有的 toast 與 success/error 樣式
+            // 這會直接觸發您最完美的鑽石發光框與進場動畫！
+            toast.className = `toast ${type}`;
+
+            // 填入您網頁內建的標題與訊息結構
+            toast.innerHTML = `
+        <div class="toast-title">${escapeHTML(title)}</div>
+        <div class="toast-message">${escapeHTML(message)}</div>
+    `;
+
+            // 塞進您網頁原本就有的 toastContainer 容器中
+            toastContainer.appendChild(toast);
+
+            /*
+              ⏱️ 提示框總共顯示一秒，最後 0.2 秒淡出。
+            */
+            setTimeout(() => {
+                toast.classList.add("is-leaving");
+            }, 800);
+
+            setTimeout(() => {
+                toast.remove();
+            }, 1000);
+        }
+
+
+
+
+
+
+        /* =========================================================
+           11. HTML 安全處理
+           
+           避免 Google Sheet 中的文字
+           被當成 HTML 執行。
+        ========================================================= */
+
+        function escapeHTML(value) {
+
+            return String(value ?? "")
+                .replace(
+                    /&/g,
+                    "&amp;"
+                )
+                .replace(
+                    /</g,
+                    "&lt;"
+                )
+                .replace(
+                    />/g,
+                    "&gt;"
+                )
+                .replace(
+                    /"/g,
+                    "&quot;"
+                )
+                .replace(
+                    /'/g,
+                    "&#039;"
+                );
+
+        }
+
+
+
+        /**
+ * 核心刪除函式（已對接自訂美化彈窗）
+ */
+        function deleteMember(targetId, domRowId) {
+            const overlay = document.getElementById("customModalOverlay");
+            const msgElement = document.getElementById("modalMessage");
+            const cancelBtn = document.getElementById("modalCancelBtn");
+            const confirmBtn = document.getElementById("modalConfirmBtn");
+
+            // 1. 設定彈窗內的文字提示
+            msgElement.innerText = `確定要刪除帳號為\n【${targetId}】\n的會員資料嗎？`;
+
+            // 2. 顯示極光彈出視窗（加入 active class）
+            overlay.classList.add("active");
+
+            // 3. 清除並重新綁定按鈕點擊事件，避免事件重複疊加
+            confirmBtn.onclick = null;
+            cancelBtn.onclick = null;
+
+            // 使用者點選【取消】
+            cancelBtn.onclick = function () {
+                overlay.classList.remove("active");
+            };
+
+            // 使用者點選【確定刪除】
+            confirmBtn.onclick = function () {
+                // 關閉視窗
+                overlay.classList.remove("active");
+
+                // 執行原有的 API 連動刪除逻辑
+                const rowElement = document.getElementById(domRowId);
+                const button = rowElement ? rowElement.querySelector('.btn-delete') : null;
+                if (button) button.disabled = true;
+
+                const payload = {
+                    action: "delete",
+                    id: targetId
+                };
+
+                fetch(API_URL, {
+                    method: "POST",
+                    mode: "cors",
+                    headers: {
+                        "Content-Type": "text/plain;charset=utf-8"
+                    },
+                    body: JSON.stringify(payload)
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === "success") {
+                            // 🎯 1. 成功通知：套用您的 neon-green 綠色發光框
+                            showToast("✨ 刪除成功", "資料已順利從試算表中移除", "success");
+
+                            if (rowElement) {
+                                rowElement.remove(); // 畫面即時移除該列
+                            }
+                        } else {
+                            // 🎯 2. 失敗通知：套用您的 neon-pink 粉紅發光框
+                            showToast("❌ 刪除失敗", data.message, "error");
+
+                            if (button) button.disabled = false;
+                        }
+                    })
+                    .catch(error => {
+                        console.error("錯誤:", error);
+                        // 🎯 3. 連線錯誤通知：套用您的 neon-pink 粉紅發光框
+                        showToast("❌ 連線失敗", "請檢查網路連線狀態。", "error");
+
+                        if (button) button.disabled = false;
+                    });
+
+            };
+        }
+
+    </script>
+    <!-- 自訂極光彈出視窗 -->
+    <div id="customModalOverlay" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-icon">⚠️</div>
+            <h3 class="modal-title">確認刪除提示</h3>
+            <p id="modalMessage" class="modal-text">確定要刪除這筆會員資料嗎？</p>
+            <div class="modal-actions">
+                <button id="modalCancelBtn" class="modal-btn btn-cancel">取消</button>
+                <button id="modalConfirmBtn" class="modal-btn btn-confirm">確定刪除</button>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
