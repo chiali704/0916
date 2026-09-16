@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Antigravity｜會員管理系統</title>
+    <title>會員管理系統</title>
 
     <style>
         /* =========================================================
@@ -486,9 +486,9 @@
 
             color: var(--text-secondary);
 
-            font-size: 14px;
+            font-size: 15px;
 
-            letter-spacing: 2.8px;
+            letter-spacing: 2px;
             text-transform: uppercase;
         }
 
@@ -499,6 +499,27 @@
 
             100% {
                 background-position: 300% center;
+            }
+        }
+
+        @keyframes heatSweep {
+            0% {
+                transform: translateX(-120%) skewX(-18deg);
+                opacity: 0;
+            }
+
+            18% {
+                opacity: 1;
+            }
+
+            52% {
+                transform: translateX(118%) skewX(-18deg);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateX(118%) skewX(-18deg);
+                opacity: 0;
             }
         }
 
@@ -595,6 +616,7 @@
         }
 
         .card-icon {
+            position: relative;
             display: flex;
 
             align-items: center;
@@ -614,6 +636,40 @@
             box-shadow:
                 0 0 18px rgba(255, 183, 3, 0.18),
                 inset 0 0 12px rgba(110, 231, 255, 0.08);
+
+            overflow: hidden;
+            isolation: isolate;
+        }
+
+        .card-icon::before {
+            content: "";
+            position: absolute;
+            inset: -20% -18%;
+            background: linear-gradient(120deg,
+                    transparent 20%,
+                    rgba(255, 255, 255, 0.74) 38%,
+                    rgba(255, 194, 87, 0.72) 50%,
+                    rgba(255, 112, 80, 0.42) 62%,
+                    transparent 76%);
+            transform: translateX(-120%) skewX(-18deg);
+            animation: heatSweep 4.2s ease-in-out infinite;
+            z-index: 0;
+        }
+
+        .card-icon::after {
+            content: "";
+            position: absolute;
+            inset: 5px;
+            border-radius: 10px;
+            background: radial-gradient(circle at 50% 50%, rgba(255, 219, 120, 0.40), transparent 65%);
+            filter: blur(6px);
+            z-index: 0;
+        }
+
+        .card-icon > * {
+            position: relative;
+            z-index: 1;
+            text-shadow: 0 0 10px rgba(255, 189, 89, 0.8);
         }
 
         .card-title h2 {
@@ -757,6 +813,21 @@
             transition: left 0.6s ease;
         }
 
+        .submit-btn::after {
+            content: "";
+            position: absolute;
+            inset: -20% -10%;
+            background: radial-gradient(circle at center, rgba(255, 210, 100, 0.35), transparent 42%);
+            filter: blur(10px);
+            z-index: 0;
+            opacity: 0.9;
+        }
+
+        .submit-btn > * {
+            position: relative;
+            z-index: 1;
+        }
+
         .submit-btn:hover {
             transform: translateY(-3px) scale(1.01);
 
@@ -804,16 +875,16 @@
 
             border-radius: 999px;
 
-            color: var(--esports-cyan);
+            color: var(--anime-cyan);
 
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.12), rgba(255, 79, 216, 0.08));
+            background: rgba(34, 211, 238, 0.08);
 
-            border: 1px solid rgba(110, 231, 255, 0.34);
+            border: 1px solid rgba(103, 232, 249, 0.3);
 
-            box-shadow: inset 0 0 14px rgba(110, 231, 255, 0.06), 0 0 18px rgba(110, 231, 255, 0.1);
+            box-shadow: inset 0 0 14px rgba(34, 211, 238, 0.06);
 
             font-size: 12px;
-            letter-spacing: 1.2px;
+            letter-spacing: 1px;
         }
 
 
