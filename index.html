@@ -13,30 +13,30 @@
     ========================================================= */
 
         :root {
-            --bg: #050610;
-            --bg-secondary: #120d1d;
+            --bg: #050816;
+            --bg-secondary: #0d1226;
 
-            --anime-blue: #8be9fd;
-            --anime-cyan: #5eead4;
-            --anime-violet: #7c3aed;
-            --anime-purple: #c084fc;
-            --anime-pink: #f472b6;
-            --anime-gold: #facc15;
-            --anime-red: #fb7185;
+            --esports-cyan: #6ee7ff;
+            --esports-blue: #3b82f6;
+            --esports-violet: #8b5cf6;
+            --esports-pink: #ff4fd8;
+            --esports-red: #ff5b7d;
+            --esports-orange: #ffb703;
+            --esports-gold: #ffd166;
 
-            --text-main: #f5ecff;
-            --text-secondary: #d9c7ef;
+            --text-main: #f8faff;
+            --text-secondary: #c7d2e8;
 
-            --glass: rgba(15, 10, 24, 0.78);
-            --glass-border: rgba(157, 92, 255, 0.30);
+            --glass: rgba(9, 13, 28, 0.78);
+            --glass-border: rgba(110, 231, 255, 0.36);
 
             --shadow-cyan:
-                0 0 16px rgba(94, 234, 212, 0.28),
-                0 0 36px rgba(139, 92, 246, 0.16);
+                0 0 18px rgba(110, 231, 255, 0.45),
+                0 0 36px rgba(59, 130, 246, 0.28);
 
-            --shadow-violet:
-                0 0 18px rgba(124, 58, 237, 0.38),
-                0 0 42px rgba(192, 132, 252, 0.16);
+            --shadow-pink:
+                0 0 18px rgba(255, 79, 216, 0.38),
+                0 0 42px rgba(168, 85, 247, 0.22);
         }
 
         * {
@@ -57,12 +57,12 @@
             color: var(--text-main);
 
             background:
-                radial-gradient(circle at 12% 12%, rgba(167, 139, 250, 0.20), transparent 24%),
-                radial-gradient(circle at 82% 18%, rgba(244, 114, 182, 0.18), transparent 26%),
-                radial-gradient(circle at 50% 82%, rgba(94, 234, 212, 0.12), transparent 28%),
-                linear-gradient(135deg, #050610 0%, #0d0918 20%, #1a1029 46%, #070510 100%);
-            background-size: 150% 150%;
-            animation: nightSkyDrift 30s linear infinite alternate;
+                radial-gradient(circle at 12% 12%, rgba(110, 231, 255, 0.24), transparent 24%),
+                radial-gradient(circle at 80% 16%, rgba(255, 79, 216, 0.18), transparent 22%),
+                radial-gradient(circle at 55% 90%, rgba(255, 183, 3, 0.12), transparent 26%),
+                linear-gradient(135deg, #050816 0%, #0a1226 18%, #10193a 46%, #090d1e 100%);
+            background-size: 140% 140%;
+            animation: nightSkyDrift 24s linear infinite alternate;
 
             overflow-x: hidden;
         }
@@ -438,21 +438,21 @@
 
             padding: 8px 18px;
 
-            border: 1px solid rgba(184, 134, 255, 0.42);
+            border: 1px solid rgba(110, 231, 255, 0.5);
 
             border-radius: 999px;
 
-            color: #e9d5ff;
+            color: var(--esports-cyan);
 
-            background: linear-gradient(135deg, rgba(124, 58, 237, 0.12), rgba(244, 114, 182, 0.08));
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.10), rgba(255, 79, 216, 0.08));
 
             font-size: 12px;
 
             letter-spacing: 4px;
 
             box-shadow:
-                0 0 18px rgba(124, 58, 237, 0.18),
-                inset 0 0 12px rgba(192, 132, 252, 0.10);
+                0 0 20px rgba(110, 231, 255, 0.18),
+                inset 0 0 10px rgba(255, 79, 216, 0.08);
         }
 
         .header h1 {
@@ -464,11 +464,11 @@
 
             background:
                 linear-gradient(90deg,
-                    #f5ecff,
-                    #c084fc,
-                    #8b5cf6,
-                    #5eead4,
-                    #f5ecff);
+                    #fff8d6,
+                    var(--esports-gold),
+                    var(--esports-cyan),
+                    var(--esports-pink),
+                    #f8fafc);
 
             background-size: 300% auto;
 
@@ -477,8 +477,8 @@
             -webkit-background-clip: text;
             background-clip: text;
 
-            text-shadow: 0 0 28px rgba(192, 132, 252, 0.22);
-            animation: gradientMove 7s linear infinite;
+            text-shadow: 0 0 28px rgba(110, 231, 255, 0.2);
+            animation: gradientMove 6s linear infinite;
         }
 
         .header p {
@@ -531,19 +531,19 @@
         .glass-card {
             position: relative;
 
-            background: linear-gradient(180deg, rgba(17, 12, 27, 0.88), rgba(12, 9, 18, 0.72));
+            background: linear-gradient(180deg, rgba(14, 18, 34, 0.88), rgba(10, 12, 22, 0.75));
 
             backdrop-filter: blur(18px);
             -webkit-backdrop-filter: blur(18px);
 
-            border: 1px solid rgba(184, 134, 255, 0.34);
+            border: 1px solid rgba(110, 231, 255, 0.32);
 
             border-radius: 28px;
 
             box-shadow:
-                0 28px 90px rgba(5, 3, 12, 0.82),
-                inset 0 0 26px rgba(196, 181, 253, 0.05),
-                0 0 30px rgba(124, 58, 237, 0.16);
+                0 30px 90px rgba(5, 8, 22, 0.8),
+                inset 0 0 20px rgba(110, 231, 255, 0.06),
+                0 0 28px rgba(59, 130, 246, 0.14);
 
             transition:
                 transform 0.35s ease,
@@ -561,14 +561,14 @@
         }
 
         .glass-card:hover {
-            transform: translateY(-6px);
+            transform: translateY(-6px) scale(1.01);
 
-            border-color: rgba(216, 180, 254, 0.52);
+            border-color: rgba(255, 79, 216, 0.44);
 
             box-shadow:
-                0 32px 100px rgba(5, 3, 12, 0.9),
-                0 0 40px rgba(168, 85, 247, 0.2),
-                0 0 30px rgba(94, 234, 212, 0.12);
+                0 32px 100px rgba(5, 8, 22, 0.86),
+                0 0 40px rgba(255, 79, 216, 0.18),
+                0 0 22px rgba(110, 231, 255, 0.14);
         }
 
 
@@ -627,14 +627,15 @@
 
             border-radius: 12px;
 
-            color: #f5d0fe;
+            color: var(--esports-orange);
 
-            background: linear-gradient(135deg, rgba(168, 85, 247, 0.18), rgba(94, 234, 212, 0.10));
+            background: linear-gradient(135deg, rgba(255, 183, 3, 0.18), rgba(110, 231, 255, 0.12));
 
-            border: 1px solid rgba(216, 180, 254, 0.38);
+            border: 1px solid rgba(255, 183, 3, 0.34);
 
             box-shadow:
-                0 0 18px rgba(168, 85, 247, 0.18);
+                0 0 18px rgba(255, 183, 3, 0.18),
+                inset 0 0 12px rgba(110, 231, 255, 0.08);
 
             overflow: hidden;
             isolation: isolate;
@@ -710,7 +711,7 @@
 
             padding: 14px 15px;
 
-            border: 1px solid rgba(196, 181, 253, 0.18);
+            border: 1px solid rgba(110, 231, 255, 0.22);
 
             border-radius: 14px;
 
@@ -718,9 +719,9 @@
 
             color: white;
 
-            background: rgba(12, 8, 18, 0.9);
+            background: linear-gradient(180deg, rgba(10, 14, 28, 0.96), rgba(12, 16, 30, 0.88));
 
-            box-shadow: inset 0 0 12px rgba(168, 85, 247, 0.04);
+            box-shadow: inset 0 0 12px rgba(110, 231, 255, 0.06);
 
             transition:
                 border-color 0.3s ease,
@@ -729,16 +730,17 @@
         }
 
         .input::placeholder {
-            color: #9aa0b5;
+            color: #7f8ca7;
         }
 
         .input:focus,
         .select:focus {
-            border-color: rgba(216, 180, 254, 0.65);
+            border-color: var(--esports-pink);
 
             box-shadow:
-                0 0 0 3px rgba(168, 85, 247, 0.10),
-                0 0 22px rgba(168, 85, 247, 0.25);
+                0 0 0 3px rgba(255, 79, 216, 0.08),
+                0 0 22px rgba(110, 231, 255, 0.28),
+                0 0 30px rgba(255, 79, 216, 0.15);
 
             transform: translateY(-2px);
         }
@@ -763,21 +765,23 @@
 
             margin-top: 8px;
 
-            border: 1px solid rgba(216, 180, 254, 0.45);
+            border: 1px solid rgba(255, 183, 3, 0.45);
 
-            border-radius: 13px;
+            border-radius: 14px;
 
-            color: #0d0716;
+            color: #140d1a;
 
             background:
                 linear-gradient(135deg,
-                    #d8b4fe,
-                    #a78bfa,
-                    #5eead4);
+                    var(--esports-orange),
+                    var(--esports-cyan),
+                    var(--esports-pink));
 
             font-size: 15px;
 
-            font-weight: 800;
+            font-weight: 900;
+
+            letter-spacing: 1.2px;
 
             cursor: pointer;
 
@@ -825,11 +829,12 @@
         }
 
         .submit-btn:hover {
-            transform: translateY(-3px);
+            transform: translateY(-3px) scale(1.01);
 
             box-shadow:
-                0 0 20px rgba(216, 180, 254, 0.55),
-                0 0 44px rgba(168, 85, 247, 0.28);
+                0 0 24px rgba(255, 183, 3, 0.35),
+                0 0 42px rgba(110, 231, 255, 0.28),
+                0 0 50px rgba(255, 79, 216, 0.22);
         }
 
         .submit-btn:hover::before {
@@ -999,50 +1004,50 @@
 
         /* 老大 */
         .role-boss {
-            color: #f5d0fe;
+            color: #fff7d6;
 
-            background: rgba(216, 180, 254, 0.09);
+            background: linear-gradient(135deg, rgba(255, 183, 3, 0.18), rgba(255, 79, 216, 0.08));
 
-            border-color: rgba(216, 180, 254, 0.34);
+            border-color: rgba(255, 183, 3, 0.44);
 
             box-shadow:
-                0 0 12px rgba(216, 180, 254, 0.18);
+                0 0 12px rgba(255, 183, 3, 0.2);
         }
 
         /* 寵物 */
         .role-pet {
-            color: #f9a8d4;
+            color: #ffe0f4;
 
-            background: rgba(244, 114, 182, 0.08);
+            background: linear-gradient(135deg, rgba(255, 79, 216, 0.18), rgba(168, 85, 247, 0.08));
 
-            border-color: rgba(244, 114, 182, 0.3);
+            border-color: rgba(255, 79, 216, 0.42);
 
             box-shadow:
-                0 0 12px rgba(244, 114, 182, 0.16);
+                0 0 12px rgba(255, 79, 216, 0.2);
         }
 
         /* 訪客 */
         .role-guest {
-            color: #a7f3d0;
+            color: #ebfdff;
 
-            background: rgba(94, 234, 212, 0.08);
+            background: linear-gradient(135deg, rgba(110, 231, 255, 0.16), rgba(59, 130, 246, 0.08));
 
-            border-color: rgba(94, 234, 212, 0.3);
+            border-color: rgba(110, 231, 255, 0.42);
 
             box-shadow:
-                0 0 12px rgba(94, 234, 212, 0.18);
+                0 0 12px rgba(110, 231, 255, 0.18);
         }
 
         /* 其他 */
         .role-default {
-            color: #ddd6fe;
+            color: #f1eaff;
 
-            background: rgba(167, 139, 250, 0.08);
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.18), rgba(110, 231, 255, 0.08));
 
-            border-color: rgba(167, 139, 250, 0.28);
+            border-color: rgba(168, 85, 247, 0.42);
 
             box-shadow:
-                0 0 12px rgba(167, 139, 250, 0.18);
+                0 0 12px rgba(168, 85, 247, 0.2);
         }
 
 
@@ -1507,13 +1512,13 @@
         <header class="header">
 
             <div class="header-label">
-                NO GAME / NO LIFE
+                E-SPORTS / ZERO WORLD
             </div>
 
-            <h1>遊戲人生會員殿堂</h1>
+            <h1>電競殿堂會員站</h1>
 
             <p>
-                ZERO · DATA · KINGDOM
+                FIGHT · STRIKE · RISE
             </p>
 
         </header>
@@ -1539,10 +1544,10 @@
                     </div>
 
                     <div>
-                        <h2>招募新玩家</h2>
+                        <h2>招募新戰隊</h2>
 
                         <span>
-                            Create New Character
+                            Register New Player
                         </span>
                     </div>
 
@@ -1651,10 +1656,10 @@
                         </div>
 
                         <div>
-                            <h2>玩家資料庫</h2>
+                            <h2>戰隊資料庫</h2>
 
                             <span>
-                                Player Archive
+                                Team Archive
                             </span>
                         </div>
 
@@ -1682,7 +1687,7 @@
 
 
         <footer>
-            ZERO WORLD · MEMBER ARCHIVE · NO GAME NO LIFE
+            ZERO WORLD · ESPORTS ARCHIVE · BATTLE READY
         </footer>
 
     </main>
